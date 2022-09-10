@@ -11,53 +11,48 @@ import mock from "../mock.json";
 import { Button, ButtonGroup } from "@mui/material";
 import { useState } from "react";
 import { useEffect } from "react";
+import { FilterButton } from "../components/FilterButton";
 
 export default function BasicTable() {
   const [incomeFilter, setIncomeFilter] = useState(false);
   const [expenditureFilter, setExpenditureFilter] = useState(false);
   const [lastMonthFilter, setLastMonthFilter] = useState(false);
   const [moreOneThousandFilter, setMoreOneThousandFilter] = useState(false);
-  const date= new Date().getMonth() + 1
+  const date = new Date().getMonth() + 1;
 
   const data = mock
-  .filter(el => incomeFilter? el.type === "доход" : el)
-  .filter(el=> expenditureFilter?el.type === "расход":el)
-  .filter(el=>moreOneThousandFilter?el.value > 1000:el)
-  .filter(el=>lastMonthFilter?+el.date.split(' ')[0].split('.')[1] === date: el)
+    .filter((el) => (incomeFilter ? el.type === "доход" : el))
+    .filter((el) => (expenditureFilter ? el.type === "расход" : el))
+    .filter((el) => (moreOneThousandFilter ? el.value > 1000 : el))
+    .filter((el) =>
+      lastMonthFilter ? +el.date.split(" ")[0].split(".")[1] === date : el
+    );
 
   return (
     <>
       <ButtonGroup variant="text" aria-label="text button group">
-        <Button
-          variant={incomeFilter ? "contained" : "outlined"}
-          onClick={() => {
-            setIncomeFilter(!incomeFilter);
-            setExpenditureFilter(false);
-          }}
-        >
-          доход
-        </Button>
-        <Button
-          variant={expenditureFilter ? "contained" : "outlined"}
-          onClick={() => {
-            setExpenditureFilter(!expenditureFilter);
-            setIncomeFilter(false);
-          }}
-        >
-          расход
-        </Button>
-        <Button
-          variant={lastMonthFilter ? "contained" : "outlined"}
-          onClick={() => setLastMonthFilter(!lastMonthFilter)}
-        >
-          за последний месяц
-        </Button>
-        <Button
-          variant={moreOneThousandFilter ? "contained" : "outlined"}
-          onClick={() => setMoreOneThousandFilter(!moreOneThousandFilter)}
-        >
-          более 1000 руб.
-        </Button>
+        <FilterButton
+          name={"доход"}
+          filter={incomeFilter}
+          setFilterData={setIncomeFilter}
+          disableFilter={[setExpenditureFilter]}
+        />
+        <FilterButton
+          name={"расход"}
+          filter={expenditureFilter}
+          setFilterData={setExpenditureFilter}
+          disableFilter={[setIncomeFilter]}
+        />
+        <FilterButton
+          name={"за последний месяц"}
+          filter={lastMonthFilter}
+          setFilterData={setLastMonthFilter}
+        />
+        <FilterButton
+          name={"более 1000 руб."}
+          filter={moreOneThousandFilter}
+          setFilterData={setMoreOneThousandFilter}
+        />
       </ButtonGroup>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">

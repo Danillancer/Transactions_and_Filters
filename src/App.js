@@ -1,5 +1,5 @@
 import './App.scss';
-import BasicTable from './components/Table';
+import BasicTable from './pages/Table';
 
 
 function App() {
