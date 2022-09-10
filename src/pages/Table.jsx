@@ -13,19 +13,27 @@ import {
   BooleanParam,
   withDefault,
   ArrayParam,
-  useQueryParams
+  useQueryParams,
 } from "use-query-params";
 import mock from "../mock.json";
-import { ButtonGroup, FormControl, MenuItem, OutlinedInput, Select } from "@mui/material";
+import {
+  ButtonGroup,
+  FormControl,
+  MenuItem,
+  OutlinedInput,
+  Select,
+} from "@mui/material";
 import { useState } from "react";
 import { FilterButton } from "../components/FilterButton";
 import { useEffect } from "react";
 
 export default function SimpleTable() {
-const [currencyArray,setCurrencyArray]= useState('')
-useEffect(() => {
-  fetch('https://api.exchangerate.host/latest?base=RUB').then(res=>res.json()).then(res=>setCurrencyArray(res.rates))
-}, [])
+  const [currencyArray, setCurrencyArray] = useState("");
+  useEffect(() => {
+    fetch("https://api.exchangerate.host/latest?base=RUB")
+      .then((res) => res.json())
+      .then((res) => setCurrencyArray(res.rates));
+  }, []);
   const [incomeFilter, setIncomeFilter] = useQueryParam(
     "incomeFilter",
     withDefault(BooleanParam, false)
@@ -44,7 +52,7 @@ useEffect(() => {
   );
   const [currency, setСurrency] = useQueryParam(
     "currency",
-    withDefault(StringParam, 'RUB')
+    withDefault(StringParam, "RUB")
   );
   const date = new Date().getMonth() + 1;
   const data = mock
@@ -54,7 +62,7 @@ useEffect(() => {
     .filter((el) =>
       lastMonthFilter ? +el.date.split(" ")[0].split(".")[1] === date : el
     );
-  const [conversionRate, setConversionRate]=useState(1)
+  const [conversionRate, setConversionRate] = useState(1);
   const MenuProps = {
     PaperProps: {
       style: {
@@ -62,41 +70,35 @@ useEffect(() => {
       },
     },
   };
+  const handleChange = (event) => {
+    setСurrency(event.target.value);
+  };
+  useEffect(() => {
+    fetch(`https://api.exchangerate.host/convert?from=RUB&to=${currency}`)
+      .then((res) => res.json())
+      .then((res) => setConversionRate(res.result));
+  }, [currency]);
 
-    const handleChange = (event) => {
-      setСurrency(
-        event.target.value
-      )
-    };
-    useEffect(() => {
-      fetch(`https://api.exchangerate.host/convert?from=RUB&to=${currency}`).then(res=>res.json()).then(res=>setConversionRate(res.result))
-    }, [currency])
-    
   return (
     <>
-    <div>
-     <Select
+      <div>
+        <Select
           value={currency}
           size="small"
           autoWidth
-          sx={{ m: 1, maxHeight:'150px'}}
+          sx={{ m: 1, maxHeight: "150px" }}
           onChange={handleChange}
           input={<OutlinedInput />}
           MenuProps={MenuProps}
         >
           {Object.keys(currencyArray).map((name) => (
-            <MenuItem
-          
-              key={name}
-              value={name}
-            >
+            <MenuItem key={name} value={name}>
               {name}
             </MenuItem>
           ))}
-        
         </Select>
-        </div>
-       
+      </div>
+
       <ButtonGroup variant="text" aria-label="text button group">
         <FilterButton
           name={"доход"}
@@ -139,7 +141,11 @@ useEffect(() => {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell align="center">{row.id}</TableCell>
-                <TableCell align="center">{conversionRate? Math.round(row.value*conversionRate):row.value}</TableCell>
+                <TableCell align="center">
+                  {conversionRate
+                    ? Math.round(row.value * conversionRate)
+                    : row.value}
+                </TableCell>
                 <TableCell align="center">{row.type}</TableCell>
                 <TableCell align="center">{row.date}</TableCell>
               </TableRow>
